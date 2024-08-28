@@ -1,36 +1,28 @@
-import { useEffect, useState } from "react";
-const url = "https://raw.githubusercontent.com/netology-code/ra16-homeworks/master/hooks-context/use-effect/data/users.json"
+import React, { useEffect, useState } from 'react';
+import { useUserContext } from '../context/UserContext';
+import { User } from '../common/types';
 
-interface IUserTypes {
-    id: string,
-    name: string
-}
 
-export default function List () {
-
-    const [user, setUser] = useState<IUserTypes[]>([]);
-
-    const fetchData = () => {
-        fetch(url)
-          .then(response => {
-            return response.json()
-          })
-          .then(data => {
-            setUser(data)
-          })
-    }
-    
+const List: React.FC = () => {
+    const [users, setUsers] = useState<User[]>([]);
+    const { setSelectedUser } = useUserContext();
+  
     useEffect(() => {
-        fetchData()
-    }, [])
-
+      fetch('https://raw.githubusercontent.com/netology-code/ra16-homeworks/master/hooks-context/use-effect/data/users.json')
+        .then((response) => response.json())
+        .then((data) => setUsers(data))
+        .catch((error) => console.error('Error fetching users:', error));
+    }, []);
+  
     return (
-        <>
-            <div>
-                {user.map(users => (
-                    <button key={users.id}>{users.name}</button>
-                ))}
-            </div>
-        </>
-    )
-}
+      <ul className="list-group users">
+        {users.map((user) => (
+          <li className="list-group-item user" key={user.id} onClick={() => setSelectedUser(user)}>
+            {user.name}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+  
+  export default List;
